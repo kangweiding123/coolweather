@@ -16,7 +16,11 @@ import com.coolweather.app.util.Utility;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -71,6 +75,13 @@ public class ChooseAreaActity extends Activity {
 		//设置无标题
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.choose_area);
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		if(prefs.getBoolean("city_selected", false)){
+			Intent intent = new Intent(this,WeatherActivity.class);
+			startActivity(intent);
+			finish();
+			return;
+		}
 		listView = (ListView) findViewById(R.id.list_view);
 		titleText = (TextView) findViewById(R.id.title_text);
 		adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,dataList);
@@ -87,6 +98,12 @@ public class ChooseAreaActity extends Activity {
 				}else if(currentLevel == LEVEL_CITY){
 					selectedCity = cityList.get(position);
 					queryCounties();
+				}else if(currentLevel == LEVEL_COUNTY){
+					String countyCode = countyList.get(position).getCountyCode();
+					Intent intent = new Intent(ChooseAreaActity.this,WeatherActivity.class);
+					intent.putExtra("county_code", countyCode);
+					startActivity(intent);
+					finish();
 				}
 			}
 		});
@@ -97,6 +114,7 @@ public class ChooseAreaActity extends Activity {
 	 * 查询全国所有的省，优先从数据库查询，如果没有查询到再去服务器查询
 	 */
 	private void queryProvinces(){
+		coolWeatherDB = CoolWeatherDB.getInstance(this);
 		provinceList = coolWeatherDB.loadProvinces();
 		if(provinceList.size() > 0){
 			dataList.clear();
@@ -110,6 +128,7 @@ public class ChooseAreaActity extends Activity {
 		}else{
 			queryFromServer(null,"province");
 		}
+		
 	}
 	
 	/**
@@ -173,7 +192,6 @@ public class ChooseAreaActity extends Activity {
 					result = Utility.handleCitiedResponse(coolWeatherDB, response, selectedProvince.getId());
 				}else if("county".equals(type)){
 					result = Utility.handleCountiesResponse(coolWeatherDB, response, selectedCity.getId());
-					Log.i("abc", "1"+result);
 				}
 				if(result){
 					//通过runOnUiThread()方法回到主线程处理逻辑

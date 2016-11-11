@@ -36,6 +36,10 @@ public class CoolWeatherDB {
 		db = dbHelper.getWritableDatabase();
 	}
 	
+	private CoolWeatherDB(){
+		
+	}
+	
 	/**
 	 * 获取CoolWeatherDB的实例
 	 */
@@ -123,8 +127,9 @@ public class CoolWeatherDB {
 			values.put("county_name", county.getCountyName());
 			values.put("county_code", county.getCountyCode());
 			values.put("city_id", county.getCityId());
-			//String slq = "insert into County(county_name,county_code,city_id) values('"+county.getCountyName()+"',"+county.getCountyCode()+','+county.getCityId()+")";
-			
+			//String slq = "insert into County(county_name,county_code,city_id) values('"
+			//+county.getCountyName()+"',"+county.getCountyCode()+','+county.getCityId()+")";
+			//county对象Name，Id，CityId都有值，可是就是插入不进去，也不报错。自己用命令却可以给数据库添加进去数据
 			db.insert("County", null, values);
 			
 		}
