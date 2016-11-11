@@ -11,6 +11,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 public class CoolWeatherDB {
 	/**
@@ -122,9 +123,13 @@ public class CoolWeatherDB {
 			values.put("county_name", county.getCountyName());
 			values.put("county_code", county.getCountyCode());
 			values.put("city_id", county.getCityId());
-			db.insert("City", null, values);
+			//String slq = "insert into County(county_name,county_code,city_id) values('"+county.getCountyName()+"',"+county.getCountyCode()+','+county.getCityId()+")";
+			
+			db.insert("County", null, values);
+			
 		}
 	}
+
 	
 	/**
 	 * 从数据库读取某城市下所有县的信息
@@ -136,8 +141,8 @@ public class CoolWeatherDB {
 			do{
 				County county = new County();
 				county.setId(cursor.getInt(cursor.getColumnIndex("id")));
-				county.setCountyCode(cursor.getString(cursor.getColumnIndex("city_code")));
-				county.setCountyName(cursor.getString(cursor.getColumnIndex("city_name")));
+				county.setCountyCode(cursor.getString(cursor.getColumnIndex("county_code")));
+				county.setCountyName(cursor.getString(cursor.getColumnIndex("county_name")));
 				county.setCityId(cityId);
 			}while(cursor.moveToNext());
 		}
